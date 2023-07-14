@@ -55,17 +55,7 @@ HAS_MICRO_GENRE = 'has_micro_genre'
 CREATED_BY = 'created_by'
 HAS_GENRE = 'has_genre'
 
-RELATION_LIST = {
-    LFM1M: {
-        0: "lives_in",
-        1: "in_album",
-        2: "has_micro_genre",
-        3: "listened_to",
-        4: "created_by",
-        5: "has_gender",
-        6: "has_genre"
-    },
-}
+SELF_LOOP = 'self_loop'
 
 
 KG_RELATION = {

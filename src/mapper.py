@@ -55,10 +55,10 @@ relation_to_entity = {
 
 relation_id2plain_name = {
     LFM1M: {
+        "0": "has_genre",
         "1": "in_album",
         "2": "has_micro_genre",
-        "3": "created_by",
-        "5": "has_genre"
+        "3": "created_by"
     }
 }
 

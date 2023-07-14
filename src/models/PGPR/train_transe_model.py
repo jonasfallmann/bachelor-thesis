@@ -93,7 +93,7 @@ def extract_embeddings_lastfm(state_dict):
             state_dict['created_by_bias.weight'].cpu().data.numpy()
         ),
         HAS_GENRE: (
-            state_dict['has_genre_bias'].cpu().data.numpy()[0],
+            state_dict['has_genre'].cpu().data.numpy()[0],
             state_dict['has_genre_bias.weight'].cpu().data.numpy()
         )
     }
