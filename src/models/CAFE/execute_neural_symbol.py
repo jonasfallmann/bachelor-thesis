@@ -340,7 +340,7 @@ class NeuralProgramLayout(object):
 
 
 def create_heuristic_program(metapaths, raw_paths_with_scores, prior_count, sample_size):
-    pcount = prior_count.astype(np.int)
+    pcount = prior_count.astype(np.int32)
     pcount[pcount > 5] = 5
 
     mp_scores = np.ones(len(metapaths)) * -99
@@ -379,7 +379,7 @@ def save_pred_paths(dataset, pred_paths):
     if not os.path.isdir(extracted_path_dir):
         os.makedirs(extracted_path_dir)
 
-    print(f"Sabing predicted paths in {extracted_path_dir} + /pred_paths.pkl")
+    print(f"Saving predicted paths in {extracted_path_dir} + /pred_paths.pkl")
 
     with open(extracted_path_dir + "/pred_paths.pkl", 'wb') as pred_paths_file:
         pickle.dump(pred_paths, pred_paths_file)
@@ -418,9 +418,9 @@ def run_program(args):
 
         pred_labels[uid] = [t[0] for t in tmp]
         pbar.update(1)
-    with open("/home/gballoccu/Desktop/RecSys22-Tutorial/Hands-On/results/ml1m/cafe" + "/red_labels.pkl", 'wb') as pred_paths_file:
-        pickle.dump(pred_labels, pred_paths_file)
-    pred_paths_file.close()
+    #with open("../../results/lfm/cafe/pred_paths.pkl", 'wb') as pred_paths_file:
+    #    pickle.dump(pred_labels, pred_paths_file)
+    #pred_paths_file.close()
     save_pred_paths(args.dataset, pred_paths_istances)
     msg = evaluate_with_insufficient_pred(pred_labels, test_labels)
     logger.info(msg)

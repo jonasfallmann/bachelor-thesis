@@ -6,103 +6,39 @@ import gzip
 
 from cafe_utils import DATA_DIR
 
-ML1M = "ml1m"
-LASTFM = "lfm1m"
-CELL = "cellphones"
+LASTFM = "lfm"
 
-# ENTITY TYPES ML1M
-PRODUCT = 'product'
-ACTOR = 'actor'
-DIRECTOR = 'director'
-PRODUCER = 'producer'
-PRODUCTION_COMPANY = 'production_company'
-EDITOR = 'editor'
-WRITTER = 'writter'
-CINEMATOGRAPHER = 'cinematographer'
-COMPOSER = 'composer'
-COUNTRY = 'country'
-USER = 'user'
-CATEGORY = 'category'
-WIKIPAGE = 'wikipage'
-FEATURED_ARTIST = 'featured_artist'
-BRAND = 'brand'
 # ENTITY TYPES LASTFM
-ARTIST = 'artist'
-ENGINEER = 'engineer'
-CATEGORY = 'category'
-PRODUCER = 'producer'
-RELATED_PRODUCT = 'related_product'
+PRODUCT = 'product'
 USER = 'user'
+ARTIST = 'artist'
+GENRE = 'genre'
+MICRO_GENRE = 'micro_genre'
+ALBUM = 'album'
 
 ENTITY_LIST = {
-    ML1M: [PRODUCT, ACTOR, DIRECTOR, PRODUCTION_COMPANY, EDITOR, WRITTER, CINEMATOGRAPHER, COMPOSER, COUNTRY, USER, CATEGORY, PRODUCER, WIKIPAGE],
-    LASTFM: [PRODUCT, FEATURED_ARTIST, ARTIST, ENGINEER, CATEGORY, PRODUCER, RELATED_PRODUCT, USER],
-    CELL: [PRODUCT, BRAND, CATEGORY, RELATED_PRODUCT, USER],
+    LASTFM: [PRODUCT, GENRE, ARTIST, MICRO_GENRE, ALBUM, USER],
 }
-
-# RELATIONS ML1M
-BELONG_TO = 'belong_to'
-PRODUCED_BY_PRODUCER = 'produced_by_producer'
-WATCHED = 'watched'
-DIRECTED_BY = 'directed_by'
-PRODUCED_BY_COMPANY = 'produced_by_company'
-STARRING = 'starring'
-EDITED_BY = 'edited_by'
-WROTE_BY = 'wrote_by'
-CINEMATOGRAPHY_BY = 'cinematography_by'
-COMPOSED_BY = 'composed_by'
-PRODUCED_IN = 'produced_in'
 
 # RELATIONS LASTFM
-LISTENED = 'listened'
-BELONG_TO = 'belong_to'
-FEATURED_BY = 'featured_by'
-MIXED_BY = 'mixed_by'
-PRODUCED_BY = 'produced_by'
-SANG_BY = 'sang_by'
-RELATED_TO = 'related_to'
-PURCHASE = 'purchase'
-ALSO_BOUGHT_RP = 'also_bought_related_product'
-ALSO_VIEWED_RP = 'also_viewed_related_product'
-ALSO_BOUGHT_P = 'also_bought_product'
-ALSO_VIEWED_P = 'also_viewed_product'
+LISTENED_TO = 'listened_to'
+IN_ALBUM = 'in_album'
+HAS_MICRO_GENRE = 'has_micro_genre'
+CREATED_BY = 'created_by'
+HAS_GENRE = 'has_genre'
 
-#RELATIONS CELL
-PURCHASE = 'purchase'
 RELATION_LIST = {
-    ML1M: [BELONG_TO, PRODUCED_BY_PRODUCER, WATCHED, DIRECTED_BY, PRODUCED_BY_COMPANY, STARRING,
-             EDITED_BY, WROTE_BY, CINEMATOGRAPHY_BY, COMPOSED_BY, PRODUCED_IN, RELATED_TO],
-    LASTFM: [BELONG_TO, FEATURED_BY, MIXED_BY, PRODUCED_BY_PRODUCER, SANG_BY, RELATED_TO, LISTENED],
-    CELL: [PURCHASE, BELONG_TO, PRODUCED_BY_COMPANY, ALSO_VIEWED_P, ALSO_BOUGHT_P, ALSO_BOUGHT_RP, ALSO_VIEWED_RP]
+    LASTFM: [IN_ALBUM, HAS_MICRO_GENRE, HAS_GENRE, CREATED_BY, LISTENED_TO],
 }
 # REVERSED RELATIONS
-REV_PREFIX = 'rev_'
-REV_BELONG_TO = REV_PREFIX + 'belong_to'
-REV_PRODUCED_BY_PRODUCER = REV_PREFIX + 'produced_by'
-REV_WATCHED = REV_PREFIX + 'watched'
-REV_DIRECTED_BY = REV_PREFIX + 'directed_by'
-REV_PRODUCED_BY_COMPANY = REV_PREFIX + 'produced_by_company'
-REV_STARRING = REV_PREFIX + 'starring'
-REV_EDITED_BY = REV_PREFIX + 'edited_by'
-REV_WROTE_BY = REV_PREFIX + 'wrote_by'
-REV_CINEMATOGRAPHY = REV_PREFIX + 'cinematography'
-REV_COMPOSED_BY = REV_PREFIX + 'composed_by'
-REV_PRODUCED_IN = REV_PREFIX + 'produced_in'
-
+REV_PREFIX = "rev_"
 # REV RELATIONS LASTFM
-REV_BELONG_TO = REV_PREFIX + 'belong_to'
-REV_FEATURED_BY = REV_PREFIX + 'featured_by'
-REV_MIXED_BY = REV_PREFIX + 'mixed_by'
-REV_PRODUCED_BY = REV_PREFIX + 'produced_by'
-REV_SANG_BY = REV_PREFIX + 'sang_by'
-REV_RELATED_TO = REV_PREFIX + 'related_to'
+REV_LISTENED_TO = REV_PREFIX + 'listened_to'
+REV_IN_ALBUM = REV_PREFIX +'in_album'
+REV_HAS_MICRO_GENRE = REV_PREFIX +'has_micro_genre'
+REV_CREATED_BY = REV_PREFIX +'created_by'
+REV_HAS_GENRE = REV_PREFIX +'has_genre'
 
-
-REV_PURCHASE = REV_PREFIX + 'purchase'
-REV_ALSO_BOUGHT_RP = REV_PREFIX + 'also_bought_related_product'
-REV_ALSO_VIEWED_RP = REV_PREFIX + 'also_viewed_related_product'
-REV_ALSO_BOUGHT_P = REV_PREFIX + 'also_bought_product'
-REV_ALSO_VIEWED_P = REV_PREFIX + 'also_viewed_product'
 
 SELF_LOOP = 'self_loop'
 

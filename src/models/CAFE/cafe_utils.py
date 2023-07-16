@@ -71,7 +71,7 @@ def parse_args():
     args.log_dir = f'{TMP_DIR[args.dataset]}/{args.name}'
     
     # This is the checkpoint name of the trained neural-symbolic model.
-    args.symbolic_model = f'{args.log_dir}/symbolic_model_epoch{args.epochs}.ckpt'
+    args.symbolic_model = f'{args.log_dir}/symbolic_model_epoch{args.epochs-1}.ckpt'
 
     # This is the filename of the paths inferred by the trained neural-symbolic model.
     args.infer_path_data = f'{args.log_dir}/infer_path_data.pkl'

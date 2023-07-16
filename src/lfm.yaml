@@ -1,0 +1,32 @@
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+HEAD_ENTITY_ID_FIELD: head_id
+TAIL_ENTITY_ID_FIELD: tail_id
+RELATION_ID_FIELD: relation_id
+TIME_FIELD: timestamp
+MAX_ITEM_LIST_LENGTH: 50
+ENTITY_ID_FIELD: entity_id
+load_col:
+    inter: [user_id, item_id, album, timestamp]
+    kg: [head_id, relation_id, tail_id]
+    link: [item_id, entity_id]
+eval_args:
+   split: {'RS': [8,1,1]}
+   group_by: user
+   order: TO
+   mode: full
+metrics: ['NDCG', 'Hit', 'Precision']
+topk: 10
+valid_metric: NDCG@10
+data_path: ./data/
+dataset: rb_lfm
+worker: 8
+device: cuda
+embedding_size: 32
+kg_embedding_size: 32
+kg_reverse_r: True
+layers: [64, 32, 16]
+train_batch_size: 1024
+eval_batch_size: 1024
+epochs: 40
+seed: 2020
