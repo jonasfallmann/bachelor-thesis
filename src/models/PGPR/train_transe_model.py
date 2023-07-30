@@ -51,13 +51,13 @@ def train(args):
                             'Smooth loss: {:.5f}'.format(smooth_loss))
                 smooth_loss = 0.0
         if epoch % 10 == 0:
-            torch.save(model.state_dict(), '{}/transe_model_sd_epoch_{}.ckpt'.format(args.log_dir, epoch))
+            torch.save(model.state_dict(), '{}/transe_model_sd_epoch_{}_{}.ckpt'.format(args.log_dir, epoch, args.embed_size))
 
 
 def extract_embeddings(args):
     """Note that last entity embedding is of size [vocab_size+1, d]."""
     dataset_name = args.dataset
-    model_file = '{}/transe_model_sd_epoch_{}.ckpt'.format(args.log_dir, args.epochs)
+    model_file = '{}/transe_model_sd_epoch_{}_{}.ckpt'.format(args.log_dir, args.epochs, args.embed_size)
     print('Load embeddings', model_file)
     state_dict = torch.load(model_file, map_location=lambda storage, loc: storage)
 
