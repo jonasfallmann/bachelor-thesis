@@ -57,6 +57,15 @@ HAS_GENRE = 'has_genre'
 
 SELF_LOOP = 'self_loop'
 
+RELATION_IDS = {
+    LISTENED_TO: 0,
+    HAS_MICRO_GENRE: 1,
+    IN_ALBUM: 2,
+    HAS_GENRE: 3,
+    CREATED_BY: 4,
+    SELF_LOOP: 5
+}
+
 
 KG_RELATION = {
     LFM1M: {

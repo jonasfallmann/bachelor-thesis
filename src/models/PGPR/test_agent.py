@@ -189,7 +189,7 @@ def predict_paths(policy_file, path_file, args):
     pickle.dump(predicts, open(path_file, 'wb'))
 
 
-def evaluate_paths(dataset_name, path_file, train_labels, test_labels, exp_property=None):
+def evaluate_paths(dataset_name, path_file, train_labels, test_labels, label, exp_property=None):
     embeds = load_embed(args.dataset)
     user_embeds = embeds[USER]
     main_entity, main_relation = MAIN_PRODUCT_INTERACTION[dataset_name]
@@ -226,6 +226,11 @@ def evaluate_paths(dataset_name, path_file, train_labels, test_labels, exp_prope
     extracted_path_dir = extracted_path_dir + "/pgpr"
     if not os.path.isdir(extracted_path_dir):
         os.makedirs(extracted_path_dir)
+
+    if label != "":
+        extracted_path_dir = extracted_path_dir + "/" + label
+        if not os.path.isdir(extracted_path_dir):
+            os.makedirs(extracted_path_dir)
 
     save_pred_paths(extracted_path_dir, pred_paths, train_labels)
 
@@ -292,8 +297,8 @@ def get_path_pattern_weigth(path_pattern_name, pred_uv_paths):
 
 
 def test(args):
-    policy_file = args.log_dir + '/policy_model_epoch_{}.ckpt'.format(args.epochs)
-    path_file = args.log_dir + '/policy_paths_epoch{}.pkl'.format(args.epochs)
+    policy_file = args.log_dir + '/policy_model_{}_epoch_{}.ckpt'.format(args.label, args.epochs)
+    path_file = args.log_dir + '/policy_paths_{}_epoch{}.pkl'.format(args.label,args.epochs)
 
     train_labels = load_labels(args.dataset, 'train')
     test_labels = load_labels(args.dataset, 'test')
@@ -301,7 +306,7 @@ def test(args):
     if args.run_path:
         predict_paths(policy_file, path_file, args)
     if args.run_eval:
-        evaluate_paths(args.dataset, path_file, train_labels, test_labels)
+        evaluate_paths(args.dataset, path_file, train_labels, test_labels, args.label)
 
 
 if __name__ == '__main__':
@@ -309,7 +314,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', type=str, default=ML1M, help='One of {cloth, beauty, cell, cd}')
     parser.add_argument('--name', type=str, default='train_agent', help='directory name.')
-    parser.add_argument('--seed', type=int, default=123, help='random seed.')
+    parser.add_argument('--seed', type=int, default=1234, help='random seed.')
     parser.add_argument('--gpu', type=str, default='0', help='gpu device.')
     parser.add_argument('--epochs', type=int, default=50, help='num of epochs.')
     parser.add_argument('--max_acts', type=int, default=250, help='Max number of actions.')
@@ -318,9 +323,10 @@ if __name__ == '__main__':
     parser.add_argument('--state_history', type=int, default=1, help='state history length')
     parser.add_argument('--hidden', type=int, nargs='*', default=[512, 256], help='number of samples')
     parser.add_argument('--add_products', type=boolean, default=False, help='Add predicted products up to 10')
-    parser.add_argument('--topk', type=list, nargs='*', default=[25,50,1], help='number of samples')
+    parser.add_argument('--topk', type=list, nargs='*', default=[25,25,1], help='number of samples')
     parser.add_argument('--run_path', type=boolean, default=True, help='Generate predicted path? (takes long time)')
     parser.add_argument('--run_eval', type=boolean, default=True, help='Run evaluation?')
+    parser.add_argument('--label', type=str, default="", help='Label')
     args = parser.parse_args()
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu

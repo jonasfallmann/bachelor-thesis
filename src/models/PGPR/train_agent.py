@@ -68,7 +68,7 @@ class ActorCritic(nn.Module):
         self.entropy.append(m.entropy())
         return acts.cpu().numpy().tolist()
 
-    def update(self, optimizer, device, ent_weight):
+    def update(self, optimizer, device, ent_weight, episode_relation_counts):
         if len(self.rewards) <= 0:
             del self.rewards[:]
             del self.saved_actions[:]
@@ -80,6 +80,10 @@ class ActorCritic(nn.Module):
         num_steps = batch_rewards.shape[1]
         for i in range(1, num_steps):
             batch_rewards[:, num_steps - i - 1] += self.gamma * batch_rewards[:, num_steps - i]
+
+        cat = Categorical(torch.from_numpy(episode_relation_counts/len(batch_rewards)))
+        rel_entropy = cat.entropy()
+        ratio = np.sum(episode_relation_counts[1:-1]) / np.sum(episode_relation_counts)
 
         actor_loss = 0
         critic_loss = 0
@@ -101,7 +105,7 @@ class ActorCritic(nn.Module):
         del self.saved_actions[:]
         del self.entropy[:]
 
-        return loss.item(), actor_loss.item(), critic_loss.item(), entropy_loss.item()
+        return loss.item(), actor_loss.item(), critic_loss.item(), entropy_loss.item(), rel_entropy, ratio
 
 
 class ACDataLoader(object):
@@ -141,7 +145,7 @@ def train(args):
     logger.info('Parameters:' + str([i[0] for i in model.named_parameters()]))
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-    total_losses, total_plosses, total_vlosses, total_entropy, total_rewards = [], [], [], [], []
+    total_losses, total_plosses, total_vlosses, total_entropy, total_rewards, total_rel_entropy, total_ratio = [], [], [], [], [], [], []
     step = 0
     model.train()
     start = 0
@@ -153,10 +157,12 @@ def train(args):
             ### Start batch episodes ###
             batch_state = env.reset(batch_uids)  # numpy array of [bs, state_dim]
             done = False
+            episode_relation_counts = []
             while not done:
                 batch_act_mask = env.batch_action_mask(dropout=args.act_dropout)  # numpy array of size [bs, act_dim]
                 batch_act_idx = model.select_action(batch_state, batch_act_mask, args.device)  # int
-                batch_state, batch_reward, done = env.batch_step(batch_act_idx)
+                batch_state, batch_reward, done, relation_counts = env.batch_step(batch_act_idx)
+                episode_relation_counts.append(relation_counts)
                 model.rewards.append(batch_reward)
             ### End of episodes ###
 
@@ -166,11 +172,14 @@ def train(args):
 
             # Update policy
             total_rewards.append(np.sum(model.rewards))
-            loss, ploss, vloss, eloss = model.update(optimizer, args.device, args.ent_weight)
+            sum_episode_relation_counts = np.sum(episode_relation_counts[1:], axis=0)
+            loss, ploss, vloss, eloss, rel_entropy, ratio = model.update(optimizer, args.device, args.ent_weight, sum_episode_relation_counts)
             total_losses.append(loss)
             total_plosses.append(ploss)
             total_vlosses.append(vloss)
             total_entropy.append(eloss)
+            total_rel_entropy.append(rel_entropy)
+            total_ratio.append(ratio)
             step += 1
 
             # Report performance
@@ -180,7 +189,9 @@ def train(args):
                 avg_ploss = np.mean(total_plosses)
                 avg_vloss = np.mean(total_vlosses)
                 avg_entropy = np.mean(total_entropy)
-                total_losses, total_plosses, total_vlosses, total_entropy, total_rewards = [], [], [], [], []
+                avg_rel_rentropy = np.mean(total_rel_entropy)
+                avg_ratio = np.mean(total_ratio)
+                total_losses, total_plosses, total_vlosses, total_entropy, total_rewards, total_rel_entropy, total_ratio = [], [], [], [], [], [], []
 
                 logger.info(
                         'epoch/step={:d}/{:d}'.format(epoch, step) +
@@ -188,10 +199,12 @@ def train(args):
                         ' | ploss={:.5f}'.format(avg_ploss) +
                         ' | vloss={:.5f}'.format(avg_vloss) +
                         ' | entropy={:.5f}'.format(avg_entropy) +
+                        ' | relation entropy={:.5f}'.format(avg_rel_rentropy) +
+                        ' | ratio={:.5f}'.format(avg_ratio) +
                         ' | reward={:.5f}'.format(avg_reward))
         ### END of epoch ###
         if epoch % 10 == 0:
-            policy_file = '{}/policy_model_epoch_{}.ckpt'.format(args.log_dir, epoch)
+            policy_file = '{}/policy_model_{}_epoch_{}.ckpt'.format(args.log_dir, args.label, epoch)
             logger.info("Save models to " + policy_file)
             torch.save(model.state_dict(), policy_file)
 
@@ -212,6 +225,7 @@ def main():
     parser.add_argument('--act_dropout', type=float, default=0, help='action dropout rate.')
     parser.add_argument('--state_history', type=int, default=1, help='state history length')
     parser.add_argument('--hidden', type=int, nargs='*', default=[512, 256], help='number of samples')
+    parser.add_argument('--label', type=str, default="", help='label')
 
     args = parser.parse_args()
 
